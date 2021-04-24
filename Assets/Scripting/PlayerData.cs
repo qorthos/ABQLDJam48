@@ -14,6 +14,8 @@ public class PlayerData : ScriptableObject
     public float StartingFuel;
     public float MaxFuel;
     public float Fuel;
+
+    public float Damage;
     
     private float throttle;
     private float maxThrottle;
@@ -37,6 +39,7 @@ public class PlayerData : ScriptableObject
         Throttle = StartingThrottle;
         MaxThrottle = StartingMaxThrottle;
         MinThrottle = StartingMinThrottle;
+        Damage = 0;
 
         Fuel = StartingFuel;
         connectedObjects = new List<GameObject>();
@@ -47,6 +50,7 @@ public class PlayerData : ScriptableObject
         Throttle = StartingThrottle;
         MaxThrottle = StartingMaxThrottle;
         MinThrottle = StartingMinThrottle;
+        Damage = 0;
 
         Fuel = StartingFuel;
 
@@ -58,6 +62,12 @@ public class PlayerData : ScriptableObject
     {
         connectedObjects.Add(newObject);
         OnConnectedObjectAdded.Invoke();
+    }
+
+    public void RemoveConnectedObject(GameObject oldObject)
+    {
+        if (connectedObjects.Contains(oldObject))
+            connectedObjects.Remove(oldObject);
     }
 
     public bool TryPopConnectedObject(out GameObject oldObject)

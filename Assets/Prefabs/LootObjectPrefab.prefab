@@ -51,6 +51,7 @@ MonoBehaviour:
   PlayerData: {fileID: 11400000, guid: 2d9541b453b3dbb4d81223f54803c443, type: 2}
   RB2D: {fileID: 7390487472686671050}
   FixedJoint: {fileID: 1202619557076481589}
+  invulnTimer: 0
 --- !u!212 &8123576543446684894
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -216,7 +217,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  DoOnce: 1
+  DoOnce: 0
 --- !u!58 &3147749842411546451
 CircleCollider2D:
   m_ObjectHideFlags: 0

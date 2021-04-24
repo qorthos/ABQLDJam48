@@ -12,6 +12,6 @@ public class DamageIndicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FillImage.fillAmount = 0;
+        FillImage.fillAmount = PlayerData.Damage;
     }
 }
