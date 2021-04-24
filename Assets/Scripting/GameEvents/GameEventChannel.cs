@@ -10,10 +10,6 @@ using UnityEngine.Events;
 public class GameEventChannel : ScriptableObject
 {
     private Dictionary<GameEventEnum, BroadcastEvent> broadcastEventLib;
-    public UnityEvent OnLogicEnded;
-    public UnityEvent OnLogicStarted;
-
-    readonly Queue<LogicGroup> logicGroups = new Queue<LogicGroup>();
     public bool IsPlayingLogic = false;
 
     private void OnEnable()
@@ -30,11 +26,7 @@ public class GameEventChannel : ScriptableObject
 
         broadcastEventLib.Clear();
 
-        logicGroups.Clear();
         IsPlayingLogic = false;
-
-        OnLogicEnded.RemoveAllListeners();
-        OnLogicStarted.RemoveAllListeners();
     }
 
     public void Broadcast(GameEventEnum gameEventType, EventArgs args)
@@ -46,22 +38,6 @@ public class GameEventChannel : ScriptableObject
         }
 
         broadcastEventLib[gameEventType].Invoke(gameEventType, args);
-    }
-
-    public LogicGroup BroadcastLogic(GameEventEnum gameEventEnum, LogicGroupArgs args = null)
-    {
-        var newLogicGroup = AppendLogic(gameEventEnum);
-
-        if (args == null)
-        {
-            args = new LogicGroupArgs();
-        }
-
-        args.LogicGroup = newLogicGroup;
-
-        Broadcast(gameEventEnum, args);
-
-        return newLogicGroup;
     }
 
     public void RegisterListener(GameEventEnum gameEventType, UnityAction<GameEventEnum, EventArgs> callback)
@@ -85,49 +61,4 @@ public class GameEventChannel : ScriptableObject
         broadcastEventLib[gameEventType].RemoveListener(callback);
     }
 
-    public LogicGroup AppendLogic(GameEventEnum gameEventType)
-    {
-        var newLogicGroupGO = new GameObject($"LogicGroup: {gameEventType}");
-        var newLogicGroup = newLogicGroupGO.AddComponent<LogicGroup>();
-        DontDestroyOnLoad(newLogicGroupGO);
-        newLogicGroup.GameEventChannel = this;
-        newLogicGroup.GameEventType = gameEventType;        
-        newLogicGroup.OnFinished.AddListener(LogicGroup_OnFinished);
-
-#if EventDebug
-        Debug.Log($"<color=yellow>▲ </color><color=#72d47f><b>Logic Group Started: {gameEventType}</b></color>");
-#endif
-
-        if (IsPlayingLogic == false)
-        {
-            IsPlayingLogic = true;
-            newLogicGroup.IsPlaying = true;
-            OnLogicStarted.Invoke();
-        }
-        else
-        {
-            logicGroups.Enqueue(newLogicGroup);
-        }
-
-        return newLogicGroup;
-    }
-
-    private void LogicGroup_OnFinished(LogicGroup group)
-    {
-        Destroy(group.gameObject);
-
-#if EventDebug
-        Debug.Log($"<color=yellow>▼ </color><color=#72d47f><b>Logic Group Ended: {group.GameEventType}</b></color>");
-#endif
-
-        if (logicGroups.Count > 0)
-        {
-            logicGroups.Dequeue().IsPlaying = true;
-        }
-        else
-        {
-            IsPlayingLogic = false;
-            OnLogicEnded.Invoke();
-        }
-    }
 }
