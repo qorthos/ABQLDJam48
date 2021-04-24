@@ -16,6 +16,9 @@ MonoBehaviour:
   StartingMaxThrottle: 130
   StartingMinThrottle: 70
   RestingThrottle: 100
+  StartingFuel: 95
+  MaxFuel: 100
+  Fuel: 95
   OnThrottleChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -23,5 +26,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnMinThrottleChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectedObjectAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectedObjectRemove:
     m_PersistentCalls:
       m_Calls: []

@@ -19,10 +19,16 @@ public class GyroController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // direct input stuff:
         inputAxes = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
         transform.Rotate(new Vector3(0, 0, -inputAxes.x * Time.deltaTime * 30f));
 
+        SetThrottle();
+        ConsumeFuel();
+    }
+
+    private void SetThrottle()
+    {
         if (Mathf.Abs(inputAxes.y) < 0.01f)
         {
             var throttleDelta = PlayerData.Throttle - PlayerData.RestingThrottle;
@@ -31,9 +37,16 @@ public class GyroController : MonoBehaviour
         else
         {
             PlayerData.Throttle += inputAxes.y * Time.deltaTime * 100f;
-        }        
+        }
 
         PlayerData.Throttle = Mathf.Clamp(PlayerData.Throttle, PlayerData.MinThrottle, PlayerData.MaxThrottle);
+
+        
+    }
+
+    private void ConsumeFuel()
+    {
+        PlayerData.Fuel -= (PlayerData.Throttle / 100f) * Time.deltaTime; // 60 units of fuel per second when hovering
 
         Force = transform.up * 100f * PlayerData.Throttle / 100f;
     }
