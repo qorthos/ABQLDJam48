@@ -6,7 +6,8 @@ public class GyroController : MonoBehaviour
 {
     public PlayerData PlayerData;
     public Rigidbody2D RB2D;
-    
+    public Animator Animator;
+
     Vector2 inputAxes;
     public Vector2 Force;
 
@@ -41,7 +42,17 @@ public class GyroController : MonoBehaviour
 
         PlayerData.Throttle = Mathf.Clamp(PlayerData.Throttle, PlayerData.MinThrottle, PlayerData.MaxThrottle);
 
-        
+        var throttlePct = (PlayerData.Throttle - PlayerData.MinThrottle) / (PlayerData.MaxThrottle - PlayerData.MinThrottle);
+        Animator.SetFloat("ThrottleSpeed", throttlePct * 2.0f + 1.0f);
+
+        if (throttlePct > 0.95f)
+        {
+            Animator.SetBool("FullThrottle", true);
+        }
+        else
+        {
+            Animator.SetBool("FullThrottle", false);
+        }
     }
 
     private void ConsumeFuel()

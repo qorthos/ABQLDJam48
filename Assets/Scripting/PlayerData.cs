@@ -39,8 +39,7 @@ public class PlayerData : ScriptableObject
         MinThrottle = StartingMinThrottle;
 
         Fuel = StartingFuel;
-
-        connectedObjects.Clear();
+        connectedObjects = new List<GameObject>();
     }
 
     private void OnDisable()
@@ -53,6 +52,7 @@ public class PlayerData : ScriptableObject
 
         connectedObjects.Clear();
     }
+
 
     public void AddConnectedObject(GameObject newObject)
     {
