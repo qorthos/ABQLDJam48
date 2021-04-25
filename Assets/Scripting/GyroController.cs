@@ -10,6 +10,7 @@ public class GyroController : MonoBehaviour
     public Rigidbody2D RB2D;
     public Animator Animator;
     public GameObject GyroGraphics;
+    public ParticleSystem ExhaustParticleSystem;
 
     public bool IsFacingRight = true;
     TweenBase flipTween;
@@ -100,6 +101,12 @@ public class GyroController : MonoBehaviour
         {
             Animator.SetBool("FullThrottle", false);
         }
+
+        var emission = ExhaustParticleSystem.emission;
+        var rot = ExhaustParticleSystem.emission.rateOverTime;
+        rot.constant = 1.5f + 2f * throttlePct;
+        emission.rateOverTime = rot;
+        
     }
 
     private void ConsumeFuel()
