@@ -114,6 +114,7 @@ public class GyroController : MonoBehaviour
         if (invulnCountdown > 0)
             return;
 
+        Animator.SetTrigger("Damaged");
         invulnCountdown = 1f;
 
         PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.32f, 0, 1);
