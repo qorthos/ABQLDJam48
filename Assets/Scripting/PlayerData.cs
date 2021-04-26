@@ -16,7 +16,11 @@ public class PlayerData : ScriptableObject
     public float Fuel;
 
     public float Damage;
-    
+
+    public int DwarvesSaved;
+    public int CrystalsCollected;
+    public float LevelElapsedSeconds;
+
     private float throttle;
     private float maxThrottle;
     private float minThrottle;
@@ -36,27 +40,29 @@ public class PlayerData : ScriptableObject
 
     private void OnEnable()
     {
-        Throttle = StartingThrottle;
-        MaxThrottle = StartingMaxThrottle;
-        MinThrottle = StartingMinThrottle;
-        Damage = 0;
-
-        Fuel = StartingFuel;
+        Reset();
         connectedObjects = new List<GameObject>();
     }
 
     private void OnDisable()
+    {
+        Reset();
+    }
+
+    public void Reset()
     {
         Throttle = StartingThrottle;
         MaxThrottle = StartingMaxThrottle;
         MinThrottle = StartingMinThrottle;
         Damage = 0;
 
-        Fuel = StartingFuel;
+        DwarvesSaved = 0;
+        CrystalsCollected = 0;
+        LevelElapsedSeconds = 0;
 
+        Fuel = StartingFuel;
         connectedObjects.Clear();
     }
-
 
     public void AddConnectedObject(GameObject newObject)
     {
@@ -75,6 +81,7 @@ public class PlayerData : ScriptableObject
         if (connectedObjects.Count > 0)
         {
             oldObject = connectedObjects[ConnectedObjectsCount - 1];
+            connectedObjects.Remove(oldObject);
             OnConnectedObjectRemove.Invoke();
             return true;
         }

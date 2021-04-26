@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface ILootable
 {
+    bool IsConnected { get; }
+    GameObject RewardPrefab { get; }
     void Disconnect();
     void Deposit();
 }

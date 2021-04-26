@@ -11,6 +11,8 @@ public class GyroController : MonoBehaviour
     public Animator Animator;
     public GameObject GyroGraphics;
     public ParticleSystem ExhaustParticleSystem;
+    public PointEffector2D MagnetEffector;
+    public AudioSource GyroAudio;
 
     public bool IsFacingRight = true;
     TweenBase flipTween;
@@ -52,21 +54,38 @@ public class GyroController : MonoBehaviour
             {
                 flipTween = Tween.LocalScale(GyroGraphics.transform, new Vector3(-1, 1, 1), 0.5f, 0f, Tween.EaseInOutBack, completeCallback: () => flipTween = null);
                 IsFacingRight = false;
+                Tween.LocalScale(ExhaustParticleSystem.transform, new Vector3(-1, 1, 1), 0.5f, 0f, Tween.EaseInOutBack, completeCallback: () => flipTween = null);
             }
             else
             {
                 flipTween = Tween.LocalScale(GyroGraphics.transform, new Vector3(+1, 1, 1), 0.5f, 0f, Tween.EaseInOutBack, completeCallback: () => flipTween = null);
                 IsFacingRight = true;
+                Tween.LocalScale(ExhaustParticleSystem.transform, new Vector3(+1, 1, 1), 0.5f, 0f, Tween.EaseInOutBack, completeCallback: () => flipTween = null);
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.F) && (releaseCountdown < 0.001f))
+        if (Input.GetKey(KeyCode.F))
         {
-            GameObject poppedGameObject;
-            if (PlayerData.TryPopConnectedObject(out poppedGameObject))
+            Debug.Log("F");
+            // turn off magnet
+            MagnetEffector.enabled = false;
+
+            if (releaseCountdown < 0.001f)
             {
-                poppedGameObject.GetComponent<ILootable>().Disconnect();
+                releaseCountdown = 0.2f;
+                
+                GameObject poppedGameObject;
+                if (PlayerData.TryPopConnectedObject(out poppedGameObject))
+                {
+                    poppedGameObject.GetComponent<ILootable>().Disconnect();
+                }
+                Debug.Log(poppedGameObject);
             }
+        }
+        else
+        {
+            // turn on magnet
+            MagnetEffector.enabled = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -104,14 +123,16 @@ public class GyroController : MonoBehaviour
 
         var emission = ExhaustParticleSystem.emission;
         var rot = ExhaustParticleSystem.emission.rateOverTime;
-        rot.constant = 1.5f + 2f * throttlePct;
+        rot.constant = 3f + 3f * throttlePct;
         emission.rateOverTime = rot;
-        
+
+        GyroAudio.pitch = 1.5f * PlayerData.Throttle / 100f;
+        GyroAudio.volume = PlayerData.Throttle / 100f / 3.0f;
     }
 
     private void ConsumeFuel()
     {
-        PlayerData.Fuel -= (PlayerData.Throttle / 100f) * Time.deltaTime; // 60 units of fuel per second when hovering
+        PlayerData.Fuel -= (PlayerData.Throttle / 100f) * Time.deltaTime * 0.75f; // 45 units of fuel per second when hovering
 
         Force = transform.up * 100f * PlayerData.Throttle / 100f;
     }
@@ -124,8 +145,8 @@ public class GyroController : MonoBehaviour
         Animator.SetTrigger("Damaged");
         invulnCountdown = 1f;
 
-        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.32f, 0, 1);
-        if (PlayerData.Damage > 0.999f)
+        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.249f, 0, 1);
+        if (PlayerData.Damage >= 1f)
         {
             Debug.Log("Gameover man");
         }

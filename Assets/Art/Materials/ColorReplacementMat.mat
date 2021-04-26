@@ -55,11 +55,13 @@ Material:
     - CRSIntensity: 0
     - Intensity: 0.94
     - Vector1_9f9d5ab4c84b403d8e17b42735c06b35: 0
+    - _CRSIntensity: 0
     - _EnableExternalAlpha: 0
     m_Colors:
     - CRSReplacementColor: {r: 1, g: 1, b: 1, a: 0}
     - Color_391ad7a2ee214e208a14ec8ec7228535: {r: 1, g: 1, b: 1, a: 0}
     - ReplacementColor: {r: 1, g: 1, b: 1, a: 0}
+    - _CRSReplacementColor: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
