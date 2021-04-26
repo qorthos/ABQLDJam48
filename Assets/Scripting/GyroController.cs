@@ -6,16 +6,23 @@ using Pixelplacement.TweenSystem;
 
 public class GyroController : MonoBehaviour
 {
+    public GameEventChannel GameEventChannel;
     public PlayerData PlayerData;
     public Rigidbody2D RB2D;
     public Animator Animator;
     public GameObject GyroGraphics;
     public ParticleSystem ExhaustParticleSystem;
     public PointEffector2D MagnetEffector;
+
+
     public AudioSource GyroAudio;
+    public AudioClip BumpClip;
+    public AudioClip PowerDownClip;
 
     public bool IsFacingRight = true;
     TweenBase flipTween;
+
+    bool isDead = false;
 
     float invulnCountdown;
     public float releaseCountdown;
@@ -45,6 +52,9 @@ public class GyroController : MonoBehaviour
 
     private void HandleInput()
     {
+        if (isDead == true)
+            return;
+
         // direct input stuff:
         inputAxes = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         transform.Rotate(new Vector3(0, 0, -inputAxes.x * Time.deltaTime * 30f));
@@ -97,6 +107,11 @@ public class GyroController : MonoBehaviour
 
     private void SetThrottle()
     {
+        if (isDead == true)
+        {
+            return;
+        }
+
         if (Mathf.Abs(inputAxes.y) < 0.01f)
         {
             var throttleDelta = PlayerData.Throttle - PlayerData.RestingThrottle;
@@ -127,19 +142,43 @@ public class GyroController : MonoBehaviour
         emission.rateOverTime = rot;
 
         GyroAudio.pitch = 1.5f * PlayerData.Throttle / 100f;
-        GyroAudio.volume = PlayerData.Throttle / 100f / 3.0f;
+        GyroAudio.volume = 0.1f + PlayerData.Throttle / 100f / 3.0f;
     }
 
     private void ConsumeFuel()
     {
+        if (isDead)
+            return;
+
         PlayerData.Fuel -= (PlayerData.Throttle / 100f) * Time.deltaTime * 0.75f; // 45 units of fuel per second when hovering
 
         Force = transform.up * 100f * PlayerData.Throttle / 100f;
+
+        if (PlayerData.Fuel <= 0f)
+        {
+            isDead = true;
+            Debug.Log("Gameover man");
+            PlayerData.Throttle = 0;
+
+            var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
+            sceneTransitioner.GameOver();
+
+            GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+            {
+                AudioClip = PowerDownClip,
+                Position = transform.position,
+            });
+
+        }
+
     }
 
     private void TakeDamage()
     {
         if (invulnCountdown > 0)
+            return;
+
+        if (isDead)
             return;
 
         Animator.SetTrigger("Damaged");
@@ -148,8 +187,40 @@ public class GyroController : MonoBehaviour
         PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.24f, 0, 1);
         if (PlayerData.Damage >= 1f)
         {
+            isDead = true;
             Debug.Log("Gameover man");
+            PlayerData.Throttle = 0;
+
+            var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
+            sceneTransitioner.GameOver();
+
+            GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+            {
+                AudioClip = PowerDownClip,
+                Position = transform.position,
+            });
+
         }
+        else
+        {
+            GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+            {
+                AudioClip = BumpClip,
+                Position = transform.position,
+            });
+        }
+
+        
+    }
+
+    public void Victory()
+    {
+        isDead = true; //lol
+        //RB2D.simulated = false;
+        RB2D.velocity = Vector2.zero;
+        RB2D.drag = 1000f;
+        RB2D.angularDrag = 1000f;
+        FindObjectOfType<SceneTransitioner>().FinishGame();
     }
 
     private void FixedUpdate()

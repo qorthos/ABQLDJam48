@@ -5,7 +5,9 @@ using Pixelplacement;
 
 public class ToolboxController : MonoBehaviour
 {
+    public GameEventChannel GameEventChannel;
     public PlayerData PlayerData;
+    public AudioClip CollectClip;
 
     public void Awake()
     {
@@ -20,6 +22,13 @@ public class ToolboxController : MonoBehaviour
     public void Trigger()
     {
         PlayerData.Damage = Mathf.Clamp(PlayerData.Damage - 0.240f, 0, 1);
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = CollectClip,
+            Position = transform.position,
+        });
+
         Destroy(gameObject);
     }
 }

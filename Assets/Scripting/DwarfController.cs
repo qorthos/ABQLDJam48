@@ -14,22 +14,40 @@ public class DwarfController : MonoBehaviour, ILootable
     public float invulnTimer = 0;
     public GameObject Reward;
 
+    public AudioClip HelpClip;
+    public AudioClip HeyClip;
+    public AudioClip ThanksClip;
+    
+
     public bool IsConnected => FixedJoint.connectedBody != null;
     public GameObject RewardPrefab { get => Reward; set => Reward = value; }
+
+    float voiceTimer = 0;
+
 
     bool isDepositing = false;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        voiceTimer += Random.Range(-0.2f, 0.2f);
     }
 
     // Update is called once per frame
     void Update()
     {
+        voiceTimer += Time.deltaTime;
+        if ((voiceTimer > 5f) && (FixedJoint.connectedBody == null))
+        {
+            voiceTimer = 0;
+            GameEventChannel.Broadcast(GameEventEnum.PlayVoiceAudio, new AudioEventArgs()
+            {
+                AudioClip = HelpClip,
+                Position = transform.position,
+            });
+        }
+        
         invulnTimer = Mathf.Clamp01(invulnTimer - Time.deltaTime);
-
         if ((invulnTimer == 0) && (gameObject.layer == 9))
         {
             gameObject.layer = 6;
@@ -45,6 +63,11 @@ public class DwarfController : MonoBehaviour, ILootable
         FixedJoint.connectedBody = rb;
         FixedJoint.autoConfigureConnectedAnchor = false;
 
+        GameEventChannel.Broadcast(GameEventEnum.PlayVoiceAudio, new AudioEventArgs()
+        {
+            AudioClip = HeyClip,
+            Position = transform.position,
+        });
 
         PlayerData.AddConnectedObject(this.gameObject);
 
@@ -61,6 +84,7 @@ public class DwarfController : MonoBehaviour, ILootable
         }        
         gameObject.layer = 9;
         invulnTimer = 1.0f;
+        voiceTimer = 0;
 
         Animator.SetBool("IsConnected", false);
     }
@@ -73,6 +97,12 @@ public class DwarfController : MonoBehaviour, ILootable
         isDepositing = true;
         Disconnect();
         PlayerData.DwarvesSaved += 1;
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayVoiceAudio, new AudioEventArgs()
+        {
+            AudioClip = ThanksClip,
+            Position = transform.position,
+        });
 
         if (PlayerData.DwarvesSaved == 1)
         {

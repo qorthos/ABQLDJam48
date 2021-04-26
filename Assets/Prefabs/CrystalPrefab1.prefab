@@ -131,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee909da3e0498347b054bec89c62a3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameEventChannel: {fileID: 11400000, guid: 18dba523b6572744e96c70987a32789a, type: 2}
   PlayerData: {fileID: 11400000, guid: 2d9541b453b3dbb4d81223f54803c443, type: 2}
   RB2D: {fileID: 7390487472686671050}
   FixedJoint: {fileID: 1202619557076481589}
@@ -138,6 +139,8 @@ MonoBehaviour:
   Reward: {fileID: 1430730318983207650, guid: b3c05a8b286c94c4fb00e8eefda3156b, type: 3}
   Damage: 0
   invulnTimer: 0
+  DepositClip: {fileID: 8300000, guid: 1da9ddc02f44626459172aab5e907af4, type: 3}
+  ConnectedClip: {fileID: 8300000, guid: 46186324a90d58d4d9ccd8c0c18845ad, type: 3}
 --- !u!50 &7390487472686671050
 Rigidbody2D:
   serializedVersion: 4

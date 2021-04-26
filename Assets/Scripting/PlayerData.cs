@@ -31,6 +31,7 @@ public class PlayerData : ScriptableObject
     public FloatUnityEvent OnMinThrottleChanged;
     public UnityEvent OnConnectedObjectAdded;
     public UnityEvent OnConnectedObjectRemove;
+    internal object TotalDwarves;
 
     public float Throttle { get => throttle; set { throttle = value; OnThrottleChanged.Invoke(value); } }
     public float MaxThrottle { get => maxThrottle; set { maxThrottle = value; OnMaxThrottleChanged.Invoke(value); } }

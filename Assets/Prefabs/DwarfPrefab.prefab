@@ -57,6 +57,9 @@ MonoBehaviour:
   Animator: {fileID: 3293067502036241051}
   invulnTimer: 0
   Reward: {fileID: 1430730318983207650, guid: a20320562c35ea04db4ae87102321cbd, type: 3}
+  HelpClip: {fileID: 8300000, guid: d0783fa48cdc04c43a7437e1807e42aa, type: 3}
+  HeyClip: {fileID: 8300000, guid: 3b51bd431b2f70d40ab3ca1e194989e1, type: 3}
+  ThanksClip: {fileID: 8300000, guid: b9b12bdeedc4a0a438c44119f4cb11ef, type: 3}
 --- !u!50 &6915397611211805493
 Rigidbody2D:
   serializedVersion: 4

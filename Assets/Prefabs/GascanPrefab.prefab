@@ -47,7 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d12035c7253f9184ba0cb62ca389dfac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameEventChannel: {fileID: 11400000, guid: 18dba523b6572744e96c70987a32789a, type: 2}
   PlayerData: {fileID: 11400000, guid: 2d9541b453b3dbb4d81223f54803c443, type: 2}
+  CollectClip: {fileID: 8300000, guid: 03d9ec2aa103f48449f6703868a87cc0, type: 3}
 --- !u!212 &6638016053407993349
 SpriteRenderer:
   m_ObjectHideFlags: 0

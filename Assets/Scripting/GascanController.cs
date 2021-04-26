@@ -5,7 +5,9 @@ using Pixelplacement;
 
 public class GascanController : MonoBehaviour
 {
+    public GameEventChannel GameEventChannel;
     public PlayerData PlayerData;
+    public AudioClip CollectClip;
 
     public void Awake()
     {
@@ -20,6 +22,13 @@ public class GascanController : MonoBehaviour
     public void Trigger()
     {
         PlayerData.Fuel = Mathf.Clamp(PlayerData.Fuel + 20, 0, 100);
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = CollectClip,
+            Position = transform.position,
+        });
+
         Destroy(gameObject);
     }
 }

@@ -5,6 +5,7 @@ using Pixelplacement;
 
 public class CrystalController : MonoBehaviour, ILootable
 {
+    public GameEventChannel GameEventChannel;
     public PlayerData PlayerData;
     public Rigidbody2D RB2D;
     public FixedJoint2D FixedJoint;
@@ -13,6 +14,9 @@ public class CrystalController : MonoBehaviour, ILootable
 
     public float Damage = 0;
     public float invulnTimer = 0;
+
+    public AudioClip DepositClip;
+    public AudioClip ConnectedClip;
 
     bool isDepositing = false;
     public bool IsConnected => FixedJoint.connectedBody != null;
@@ -47,6 +51,12 @@ public class CrystalController : MonoBehaviour, ILootable
         FixedJoint.autoConfigureConnectedAnchor = false;
 
         PlayerData.AddConnectedObject(this.gameObject);
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = ConnectedClip,
+            Position = transform.position,
+        });
     }
 
     public void Disconnect()
@@ -67,6 +77,12 @@ public class CrystalController : MonoBehaviour, ILootable
 
         if (isDepositing)
             return;
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = DepositClip,
+            Position = transform.position,
+        });
 
         isDepositing = true;
 

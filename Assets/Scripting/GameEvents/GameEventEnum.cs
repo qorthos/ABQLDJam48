@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 public enum GameEventEnum
 {
     Dialogue,
-    PlayAudio,
+    PlayLocalAudio,
+    PlayGlobalAudio,
+    PlayVoiceAudio,
 }
 

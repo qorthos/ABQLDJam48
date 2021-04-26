@@ -9,3 +9,9 @@ public class DialogueEventArgs : EventArgs
 {
     public string Msg;
 }
+
+public class AudioEventArgs : EventArgs
+{
+    public AudioClip AudioClip;
+    public Vector2 Position;
+}
