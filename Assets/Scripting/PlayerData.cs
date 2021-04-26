@@ -40,8 +40,8 @@ public class PlayerData : ScriptableObject
 
     private void OnEnable()
     {
-        Reset();
         connectedObjects = new List<GameObject>();
+        Reset();        
     }
 
     private void OnDisable()

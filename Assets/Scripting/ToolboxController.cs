@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pixelplacement;
 
-public class RepairController : MonoBehaviour
+public class ToolboxController : MonoBehaviour
 {
     public PlayerData PlayerData;
 
@@ -19,7 +19,7 @@ public class RepairController : MonoBehaviour
 
     public void Trigger()
     {
-        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage - 0.249f, 0, 1);
+        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage - 0.240f, 0, 1);
         Destroy(gameObject);
     }
 }
