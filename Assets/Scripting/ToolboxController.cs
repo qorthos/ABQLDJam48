@@ -21,7 +21,7 @@ public class ToolboxController : MonoBehaviour
 
     public void Trigger()
     {
-        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage - 0.240f, 0, 1);
+        PlayerData.Damage = Mathf.Clamp(0, 0, 1);
 
         GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
         {

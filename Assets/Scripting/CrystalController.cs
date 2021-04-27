@@ -22,7 +22,7 @@ public class CrystalController : MonoBehaviour, ILootable
     public bool IsConnected => FixedJoint.connectedBody != null;
 
     public GameObject RewardPrefab { get => Reward; set => Reward = value; }
-
+    public bool IsDepositing => isDepositing;
 
     // Start is called before the first frame update
     void Start()
@@ -73,18 +73,17 @@ public class CrystalController : MonoBehaviour, ILootable
 
     public void Deposit()
     {
-        Disconnect();
-
         if (isDepositing)
             return;
+        Disconnect();
+
+        isDepositing = true;
 
         GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
         {
             AudioClip = DepositClip,
             Position = transform.position,
         });
-
-        isDepositing = true;
 
         PlayerData.CrystalsCollected += 1;
         var destroyTween = Tween.LocalScale(transform, new Vector3(0.01f, 0.01f, 0.01f), 0.3f, 0, Tween.EaseOut, completeCallback: () => Destroy(gameObject));

@@ -8,6 +8,7 @@ public class GascanController : MonoBehaviour
     public GameEventChannel GameEventChannel;
     public PlayerData PlayerData;
     public AudioClip CollectClip;
+    bool block = false;
 
     public void Awake()
     {
@@ -21,6 +22,10 @@ public class GascanController : MonoBehaviour
 
     public void Trigger()
     {
+        if (block)
+            return;
+        block = true;
+
         PlayerData.Fuel = Mathf.Clamp(PlayerData.Fuel + 20, 0, 100);
 
         GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()

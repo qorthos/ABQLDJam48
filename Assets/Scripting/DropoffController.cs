@@ -18,13 +18,16 @@ public class DropoffController : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         var iLootable = collision.gameObject.GetComponent<ILootable>();
 
         if (iLootable != null)
         {
             if (iLootable.IsConnected == true)
+                return;
+
+            if (iLootable.IsDepositing == true)
                 return;
 
             Debug.Log("om nom nom");

@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
 
         GameEventChannel.Broadcast(GameEventEnum.Dialogue, new DialogueEventArgs()
         {
-            Msg = "Time is money friend! Drop off the crystals at the shaft entrance and we'll give you time, err, I mean gas!",
+            Msg = "Time is money friend! Drop off the crystals at any shaft entrance and we'll give you time, err, I mean gas!",
         });
 
         BlackPanel.gameObject.SetActive(true);

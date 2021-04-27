@@ -21,6 +21,7 @@ public class DwarfController : MonoBehaviour, ILootable
 
     public bool IsConnected => FixedJoint.connectedBody != null;
     public GameObject RewardPrefab { get => Reward; set => Reward = value; }
+    public bool IsDepositing => isDepositing;
 
     float voiceTimer = 0;
 

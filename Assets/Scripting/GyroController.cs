@@ -14,10 +14,14 @@ public class GyroController : MonoBehaviour
     public ParticleSystem ExhaustParticleSystem;
     public PointEffector2D MagnetEffector;
 
-
+    public GameObject Blades;
     public AudioSource GyroAudio;
     public AudioClip BumpClip;
     public AudioClip PowerDownClip;
+    public AudioClip PressButtonClip;
+
+    public float MaxRotation;
+    public float MinRotation;
 
     public bool IsFacingRight = true;
     TweenBase flipTween;
@@ -29,6 +33,7 @@ public class GyroController : MonoBehaviour
 
     Vector2 inputAxes;
     public Vector2 Force;
+    private bool gasWarn;
 
     // Start is called before the first frame update
     void Start()
@@ -57,7 +62,22 @@ public class GyroController : MonoBehaviour
 
         // direct input stuff:
         inputAxes = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        transform.Rotate(new Vector3(0, 0, -inputAxes.x * Time.deltaTime * 30f));
+        var euler = transform.rotation.eulerAngles.z;
+        if (euler >= 180)
+            euler -= 360;
+
+        var newRot = euler -inputAxes.x * Time.deltaTime * 30f;
+
+        if ((newRot > MaxRotation) || (newRot < MinRotation))
+        {
+            //nothin
+        }
+        else
+        {
+            transform.Rotate(new Vector3(0, 0, -inputAxes.x * Time.deltaTime * 30f));
+        }
+
+        
         if (Input.GetKey(KeyCode.Space) && flipTween == null)
         {
             if (IsFacingRight)
@@ -156,21 +176,22 @@ public class GyroController : MonoBehaviour
 
         if (PlayerData.Fuel <= 0f)
         {
-            isDead = true;
-            Debug.Log("Gameover man");
-            PlayerData.Throttle = 0;
+            GameOver();
 
-            var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
-            sceneTransitioner.GameOver();
-
-            GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+            GameEventChannel.Broadcast(GameEventEnum.Dialogue, new DialogueEventArgs()
             {
-                AudioClip = PowerDownClip,
-                Position = transform.position,
+                Msg = "These things run on gas, you know?",
             });
-
         }
+        else if ((PlayerData.Fuel <= 10) && (gasWarn == false))
+        {
+            gasWarn = true;
 
+            GameEventChannel.Broadcast(GameEventEnum.Dialogue, new DialogueEventArgs()
+            {
+                Msg = "Gas levels critical!",
+            });
+        }
     }
 
     private void TakeDamage()
@@ -184,22 +205,14 @@ public class GyroController : MonoBehaviour
         Animator.SetTrigger("Damaged");
         invulnCountdown = 1f;
 
-        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.24f, 0, 1);
+        PlayerData.Damage = Mathf.Clamp(PlayerData.Damage + 0.19f, 0, 1);
         if (PlayerData.Damage >= 1f)
         {
-            isDead = true;
-            Debug.Log("Gameover man");
-            PlayerData.Throttle = 0;
-
-            var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
-            sceneTransitioner.GameOver();
-
-            GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+            GameOver();
+            GameEventChannel.Broadcast(GameEventEnum.Dialogue, new DialogueEventArgs()
             {
-                AudioClip = PowerDownClip,
-                Position = transform.position,
+                Msg = "Critical damage detected!",
             });
-
         }
         else
         {
@@ -223,8 +236,47 @@ public class GyroController : MonoBehaviour
         FindObjectOfType<SceneTransitioner>().FinishGame();
     }
 
+    public void PressButton()
+    {
+        GameEventChannel.Broadcast(GameEventEnum.Dialogue, new DialogueEventArgs()
+        {
+            Msg = "You pressed the button... didn't you?",
+        });
+
+        PlayerData.Throttle = 0;
+        isDead = true;
+        Blades.transform.parent = null;
+        var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
+        Tween.Position(Blades.transform, Blades.transform.position + new Vector3(0, 5, 0), 2f, 0, Tween.EaseOutStrong, completeCallback: () => sceneTransitioner.GameOver());
+
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = PressButtonClip,
+            Position = transform.position,
+        });
+    }
+
+    private void GameOver()
+    {
+        isDead = true;
+        Debug.Log("Gameover man");
+        PlayerData.Throttle = 0;
+
+        var sceneTransitioner = FindObjectOfType<SceneTransitioner>();
+        sceneTransitioner.GameOver();
+        
+        GameEventChannel.Broadcast(GameEventEnum.PlayLocalAudio, new AudioEventArgs()
+        {
+            AudioClip = PowerDownClip,
+            Position = transform.position,
+        });
+    }
+
     private void FixedUpdate()
     {
+        if (isDead)
+            Force = new Vector2(0, -10);
+
         RB2D.AddForce(Force);
     }
 
@@ -237,7 +289,13 @@ public class GyroController : MonoBehaviour
     {
         Debug.Log($"IT IS {collision.relativeVelocity} BONG OCLOCK: ");
 
-        if (collision.relativeVelocity.magnitude > 1f)
+        if (collision.gameObject.layer == 7)
+            return;//magnet
+        if (collision.gameObject.layer == 6)
+            return; //loot
+
+
+        if (collision.relativeVelocity.magnitude > 2f)
         {
             TakeDamage();
         }

@@ -8,4 +8,5 @@ public interface ILootable
     GameObject RewardPrefab { get; }
     void Disconnect();
     void Deposit();
+    bool IsDepositing { get; }
 }

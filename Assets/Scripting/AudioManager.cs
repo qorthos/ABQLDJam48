@@ -13,6 +13,8 @@ public class AudioManager : MonoBehaviour
 
     public AudioSource MusicSource;
 
+    float timeSinceLastAudio = 0;
+
     private void Awake()
     {
         GameEventChannel.RegisterListener(GameEventEnum.PlayLocalAudio, OnPlayLocalAudio);
@@ -28,26 +30,43 @@ public class AudioManager : MonoBehaviour
         var newAS = newGO.GetComponent<AudioSource>();
         newAS.clip = audioArgs.AudioClip;
         newAS.Play();
-
     }
 
     private void OnPlayGlobalAudio(GameEventEnum arg0, EventArgs arg1)
     {
+        if (timeSinceLastAudio < 0.1f)
+        {
+            return;
+        }
+
         var audioArgs = arg1 as AudioEventArgs;
         var newGO = Instantiate(GlobalAudioPrefab, transform);
         newGO.transform.position = audioArgs.Position;
         var newAS = newGO.GetComponent<AudioSource>();
         newAS.clip = audioArgs.AudioClip;
         newAS.Play();
+        timeSinceLastAudio = 0;
     }
 
     private void OnPlayLocalAudio(GameEventEnum arg0, EventArgs arg1)
     {
+        if (timeSinceLastAudio < 0.1f)
+        {
+            return;
+        }
+
         var audioArgs = arg1 as AudioEventArgs;
         var newGO = Instantiate(LocalAudioPrefab, transform);
         newGO.transform.position = audioArgs.Position;
         var newAS = newGO.GetComponent<AudioSource>();
         newAS.clip = audioArgs.AudioClip;
         newAS.Play();
+        timeSinceLastAudio = 0;
+    }
+
+    private void Update()
+    {
+        timeSinceLastAudio += Time.deltaTime;
+
     }
 }
